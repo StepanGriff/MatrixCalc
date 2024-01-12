@@ -33,7 +33,7 @@ class MatrixMath:
 
     def multiplication(self):
         assert len(self.a) == len(self.b[0]), "Matrices are not the proper size"
-        res = [[0 for x in range(len(self.a))] for y in range(len(self.b[0]))]
+        res = self.createMatrix(len(self.a),len(self.b[0]))
         it = 0
         for i in range(len(self.a)):
             for j in range(len(self.b[0])):
@@ -55,6 +55,7 @@ class MatrixMath:
                 else:
                     alt = -1 
                 det += (alt*x[0][num])*self.determinant(self.shrinkMatrix(x, 0, num))
+            assert det!= 0, "Matrix is Singular"
             return (det)
 
     def shrinkMatrix(self, x, y:int , z:int):
@@ -67,58 +68,66 @@ class MatrixMath:
     
     def matrixOfMinors(self, x):
         assert len(x) == len(x[0]), "Matrix is not square"
-        mom = [[0 for val in range(len(x))] for val2 in range(len(x))]
+        mom = self.createMatrix(len(x),len(x))
         for num in range(len(x)):
             for num2 in range(len(x)):
                 mom [num][num2] = self.determinant(self.shrinkMatrix(x,num,num2))
         return mom
 
     def matrixOfCofactors(self, x):
-        moc = [[0 for val in range(len(x))] for val2 in range(len(x))]
+        moc = self.createMatrix(len(x),len(x))
         for num in range(len(x)):
             for num2 in range(len(x)):
                 moc [num][num2] = x[num][num2]*((-1)**(num+num2))
         return moc
     
-    def transposeMatrix(self, x):
-        tm = [[0 for val in range(len(x[0]))] for val2 in range(len(x))]
+    def transposeMatrix(self, x): 
+        tm = self.createMatrix(len(x[0]),len(x))
         for num in range(len(x)):
             for num2 in range(len(x)):
                 tm [num][num2] = x[num2][num]
         return tm
+    
+    def adjugate(self, x):        
+        ad = self.cloneMatrix(x)
+        ad = self.matrixOfMinors(ad)
+        ad = self.matrixOfCofactors(ad)
+        ad = self.transposeMatrix(ad)
+        return ad
 
     def cloneMatrix(self, x):
-        clone= [[0 for val in range(len(x))] for val2 in range(len(x))]
+        clone= self.createMatrix(len(x),len(x))
         for num in range(len(x)):
             for num2 in range(len(x[0])):
                 clone[num][num2] = x[num][num2]
         return clone
 
     def division(self):
-        self.b = self.invert(self.b)
+        self.b = self.inverse(self.b)
         return(self.multiplication())
 
-    def invert(self, y: list[list[int]]): 
-        assert (len(y) == len(y[0])), "Matrices are not the same size"
-        ind = [[0 for x in range(len(self.a))] for y in range(len(self.b[0]))]
-        inv = [[0 for x in range(len(self.a))] for y in range(len(self.b[0]))]
-        it=0
-        for it in range(len(y)):
-            ind[it][it] = 1
-            it+=1
+    def inverse(self, x):
+        invDet = (1/self.determinant(x))
+        inv = self.scalarMultiplication(x,invDet)
         return(inv)
 
-    def scalarMultiplication(self):
+    def scalarMultiplication(self, x, y:int):
+        for num in range(len(x)):
+            x[num] = x[num]*y
         return x
     
-    
-            
+    def createMatrix(self, x:int, y:int):
+        cm = [[0 for val in range(x)] for val2 in range(y)]
+        return cm
 
 x = MatrixMath([[1,2],[3,4]],[[5,6],[7,8]])
 #print (x.add())
 #print (x.subtract())
 #print (x.multiplication())
 #print (x.division())
-z = [[1,2,3], [5,6,7],[9,10,11]]
-print(x.transposeMatrix(z))
-#print(x.matrixOfMinors(z,1))
+z = [[1,2,3], [5,16,7],[9,10,11]]
+#print(x.transposeMatrix(z))
+#print(x.matrixOfMinors(z))
+#print(x.matrixOfCofactors(z))
+#print(x.adjugate(z))
+print(x.scalarMultiplication(z,5))
