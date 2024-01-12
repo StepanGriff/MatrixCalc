@@ -50,23 +50,20 @@ class MatrixMath:
             return (det)
         else:
             for num in range(len(x)):
-                if num %2 == 0:
+                if num % 2 == 0:
                     alt = 1
                 else:
-                    alt =-1 
+                    alt = -1 
                 det += (alt*x[0][num])*self.determinant(self.shrinkMatrix(x, 0, num))
             return (det)
 
-
     def shrinkMatrix(self, x, y:int , z:int):
-        minor = list[list[int]]
         clone = self.cloneMatrix(x)
         clone.remove
         clone.pop(y)
         for num in range(len(clone)):
             clone[num].pop(z)
-        minor = clone
-        return minor
+        return clone
     
     def matrixOfMinors(self, x):
         assert len(x) == len(x[0]), "Matrix is not square"
@@ -76,17 +73,26 @@ class MatrixMath:
                 mom [num][num2] = self.determinant(self.shrinkMatrix(x,num,num2))
         return mom
 
-
     def matrixOfCofactors(self, x):
-        return x
+        moc = [[0 for val in range(len(x))] for val2 in range(len(x))]
+        for num in range(len(x)):
+            for num2 in range(len(x)):
+                moc [num][num2] = x[num][num2]*((-1)**(num+num2))
+        return moc
     
+    def transposeMatrix(self, x):
+        tm = [[0 for val in range(len(x[0]))] for val2 in range(len(x))]
+        for num in range(len(x)):
+            for num2 in range(len(x)):
+                tm [num][num2] = x[num2][num]
+        return tm
+
     def cloneMatrix(self, x):
         clone= [[0 for val in range(len(x))] for val2 in range(len(x))]
         for num in range(len(x)):
             for num2 in range(len(x[0])):
                 clone[num][num2] = x[num][num2]
         return clone
-
 
     def division(self):
         self.b = self.invert(self.b)
@@ -113,6 +119,6 @@ x = MatrixMath([[1,2],[3,4]],[[5,6],[7,8]])
 #print (x.subtract())
 #print (x.multiplication())
 #print (x.division())
-z = [[1,2,3,4,51], [5,6,7,8,87],[9,10,11,12,154],[103,14,15,16,41], [21,67,34,80,97]]
-print(x.matrixOfMinors(z))
+z = [[1,2,3], [5,6,7],[9,10,11]]
+print(x.transposeMatrix(z))
 #print(x.matrixOfMinors(z,1))
